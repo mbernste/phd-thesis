@@ -1,0 +1,179 @@
+%!TEX TS-program = pdflatex
+% dissertation.tex -- main dissertation file
+%
+% Wisconsin dissertation template
+% Copyright (c) 2008-2009 William C. Benton.  All rights reserved.
+%
+% This program can redistributed and/or modified under the terms
+% of the LaTeX Project Public License Distributed from CTAN
+% archives in directory macros/latex/base/lppl.txt; either
+% version 1 of the License, or (at your option) any later version.
+%
+% This program includes other software that is licensed under the
+% terms of the LPPL and the Perl Artistic License; see README for details.
+%
+% You, the user, still hold the copyright to any document you produce
+% with this software (like your dissertation).
+%
+
+%%% You'll want ``oneside'' for the deposit version, but probably not for any versions that don't need to meet the UW requirements
+\documentclass[12pt,oneside,letterpaper]{memoir}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[mathscr]{euscript}
+\usepackage{hyperref}
+\usepackage{appendix}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+%--------------------DATA----------------------
+
+% Total number of human, RNA-seq experiments in the SRA
+\newcommand{\NumSRAExperiments}{185,000}
+% Total number of human samples in the SRA on which RNA-seq was performed
+\newcommand{\NumSRASamples}{166,000}
+% Total number of studies storing human RNA-seq samples
+\newcommand{\NumSRAStudies}{4,500}
+
+% Lower bound of number of biological samples in SRA (in millions)
+\newcommand{\SamplesInSRA}{1.5}
+% Lower bound of number of studies in SRA 
+\newcommand{\StudiesInSRA}{75,000}
+% Total human RNA-seq, ILLUMINA samples that we are considering
+\newcommand{\TotalSamplesConsidered}{75038}
+% Number of samples with non-empty key-value pairs of samples we are considering
+\newcommand{\TotalSamplesConsideredNonEmptyKeyVals}{73407}
+% Number of distinct studies represented in our considered samples
+\newcommand{\DistinctStudiesConsidered}{2681}
+% Number of studies with at least 100 samples
+\newcommand{\NumberOfLargeStudies}{88}
+% Number of studies with less than 100 samples
+\newcommand{\NumberOfSmallStudies}{2593}
+% Percentage of samples belonging to "large" studies
+\newcommand{\PercentageSamplesInLargeStudies}{57}
+% Size of training set used to train sample-type classifier
+\newcommand{\SampleTypeTrainingSetSize}{705}
+% Size of initial test set used to evaluate ontology mapping pipeline and recall for sample-type classifier
+\newcommand{\TestSetSize}{422}
+% Size of test set of 422 samples considering only those with real-value properties
+\newcommand{\TestSetRealValSize}{104}
+% Precision and recall on extracting real-value properties
+\newcommand{\RealValPrecision}{0.989}
+\newcommand{\RealValRecall}{0.672}
+% Number of samples in non-enriched test set that could manually annotated with sample-type
+\newcommand{\NonEnrichedSampleTypeTestSetSize}{367}
+% Accuracy of sample-type classifier over the non-enriched test set (i.e. test set used for evaluating ontology term mapping)
+\newcommand{\SampleTypeOverallAccuracy}{0.845}
+% Number of samples in the enriched test set used to compute the transpose of the column normalized confusion matrix
+\newcommand{\EnrichedSampleTypeTestSetSize}{554}
+% Percentage of MetaSRA samples annotated with real-value property
+\newcommand{\PercentageMetaSRARealVal}{23.2}
+
+
+% Total number of bulk primary cell samples
+\newcommand{\ExperimentsInBulkDataset}{4,170}
+% Number of bulk samples in the bulk training set
+\newcommand{\ExperimentsInBulkTrainingDataset}{3,482}
+% Total number of studies in the bulk dataset
+\newcommand{\StudiesInBulkDataset}{263}
+% Total number of cell types in the bulk dataset
+\newcommand{\CellTypesInBulkDataset}{297}
+% Number of studies in the bulk training set
+\newcommand{\StudiesInBulkTrainingDataset}{206}
+\newcommand{\ExperimentsInBulkTestDataset}{688}
+\newcommand{\StudiesInBulkTestDataset}{57}
+\newcommand{\NumCellTypesIntersectTrainingTest}{200}
+\newcommand{\MostSpecificBulkCellTypes}{104}
+\newcommand{\TrainingSizeURSA}{approximately 9,000}
+\newcommand{\ExperimentsInSingleCellDataset}{7,402}
+\newcommand{\TotalExperiments}{11,572}
+\newcommand{\StudiesInSingleCellDataset}{15}
+\newcommand{\CellTypesInSingleCellDataset}{125}
+\newcommand{\BulkRestrictedSingleCellExperiments}{4,961} \newcommand{\BulkRestrictedSingleCellStudies}{13}  \newcommand{\BulkRestrictedSingleCellCellTypes}{66}
+\newcommand{\RawGenomicFeatures}{200,401}
+\newcommand{\GeneLevelFeatures}{58,243}
+\newcommand{\DataDownloadURL}{http://deweylab.biostat.wisc.edu/cell\_type\_classification}
+\newcommand{\ClassifierURL}{https://github.com/deweylab/CellO}
+\newcommand{\CodeURL}{https://github.com/deweylab/cell-type-classification-paper}
+
+\newcommand{\FracEdgesInconsistent}{6.9\%}
+\newcommand{\EdgesSeverelyInconsistent}{32}
+\newcommand{\MinGenesInGOSet}{5}
+
+\newcommand{\NumTenXGenes}{32,738}
+\newcommand{\NumTenXIntersection}{31,283}
+
+%----------------------------------------------
+
+
+\input{includes/preamble}
+\input{includes/defs}
+\input{includes/thesisdefs}
+\svnidlong{$LastChangedBy$}{$LastChangedRevision$}{$LastChangedDate$}{$HeadURL: http://freevariable.com/dissertation/branches/diss-template/dissertation.tex $} 
+
+\clearpage\pagenumbering{roman}  % This makes the page numbers Roman (i, ii, etc)
+
+\title{Computational methods for transcriptome-based cellular phenotyping}
+\author{Matthew N. Bernstein}
+\department{Computer Sciences}
+
+\date{2019}
+
+\begin{document}
+
+%%% Uncomment the following if your .bib contains references that you will not 
+%%% explicitly cite, but that should be in the final bibliography:
+% \nocite{*}
+
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+\maketitle
+
+%% Add \part declarations if you want, but it's not necessary
+%\part{Preliminaries}
+
+\include{frontmatter/frontmatter}
+
+%% Now include the tex files for each chapter, like so (I put these in separate dirs): 
+\include{introduction}
+\include{chapter1}
+\include{chapter2}
+\include{chapter3}
+\include{future}
+\begin{appendices}
+\include{appendix_metadata_pipeline}
+\include{appendix_website}
+\include{appendix2}
+\include{appendix_bnc}
+\include{appendix_model_deriv}
+\end{appendices}
+% \include{motivation/motivation}
+% \include{related/related}
+
+%% etc, etc.
+
+%% Do you have appendices?  If so, add them here, just like chapters.
+% \begin{appendices}
+% \include{backmatter/appendix1}
+% \end{appendices}
+
+%% Are you a big nerd with a colophon?  Add it here.
+%\begin{colophon}
+%\input{backmatter/colophon}
+%\end{colophon}
+
+%% McBride is a very nice style (some version is included in this distribution)
+\bibliographystyle{mcbride}
+\bibliography{the_master_bibliography}
+
+%% Want an index?  Neither did I.
+%\printindex
+
+\end{document}

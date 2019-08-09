@@ -1,0 +1,59 @@
+\chapter{Detailed description of experiment evaluating effects of training on heterogeneous data } \label{app:sample_pred}
+
+\section{Description of experiment }
+
+To test the effects of data heterogeneity in training, we performed an experiment that involved training a set of binary classifiers using both homogeneous training sets, where the positive examples all originate from the same study, and heterogeneous datasets, where positive examples originate from multiple studies.  First, the notation we will use to describe these experiments is as follows: Let
+\begin{align*}
+X &:= \text{the set of all samples in the data set}\\
+S &:= \text{the set of studies with at least with at least one sample in $X$}
+\end{align*}
+For a given cell type $c$, let
+\begin{align*}
+X_c \subset X &:= \text{the set of  all samples of cell type }c\\
+X_{\neg c} &:= X \setminus X_c
+\end{align*}
+Given a set of samples $A \subseteq X$, we define the function 
+$$T(A) := \text{the set of all studies with at least one sample in $A$}$$ 
+Given a study $s \in S$, let
+\begin{align*}
+X_{c,s} \subset X_c &:= \text{the subset of $X_c$ from study $s$} \\
+X_{\neg c,s} \subset X_{\neg c} &:= \text{the subset of $X_{\neg c}$ from study $s$}
+\end{align*}
+
+
+The experiment proceeds as follows: for a given cell type $c$, we perform a cross-validation-like scheme where for each study $s_{\text{test}} \in T(X_c)$, we create a set of held out test samples. The positive test samples come from study $s_{\text{test}}$. That is, 
+$$\text{Test\_Pos}_{c,s_{\text{test}}} := X_{c,s_{\text{test}}}$$ 
+The negative test items are subsampled from all studies that have no samples of cell type $c$. That is, 
+$$\text{Test\_Neg}_{c,s_{\text{test}}} \subset \text{The union of samples from studies not in $T(X_c)$}$$ 
+%X_{\neg c} \setminus \left(\bigcup_{s \in T(X_{c})} X_{\neg c, s}\right)$$
+This ensures that the training and test samples are divided along study boundaries.  The test set for cell type $c$ and held-out study $s$ is then constructed as
+$$\text{Test}_{c,s_{\text{test}}} := \text{Test\_Pos}_{c,s_{\text{test}}} \cup \text{Test\_Neg}_{c,s_{\text{test}}}$$
+Every homogeneous training set and heterogeneous training set, will contain an identical set of negative training items that are sub-sampled from all studies that do not have data in the test set.  That is,
+$$\text{Train\_Neg}_{c,s_{\text{test}}} \subset \left\{x \in X_{\neg c} \ : \ \text{$x$ is not from a study in the test set} \right\}$$
+We want to ensure that all training sets have an identical number of examples. Since they all share the same negative examples, we must ensure that all training sets also have the same number of positive examples. To ensure this, we compute the minimum sized set of positive examples coming from a single held-in study:
+$$k := \text{min} \ \{|X_{c,s}| : s \in T(X_c) \setminus \{s_{\text{test}}\}\}$$
+Now, we create sets of homogeneous positive examples as follows: for each held-in study $s_{\text{train}} \in S_c \setminus \{s_{\text{test}}\}$, we create $L$ homogeneous training sets. That is, for each $l \in [L]$, the $l$th training set's positive examples consist of $k$ random samples from $T(X_{c, s_{\text{train}}})$. That is,
+$$\text{Homog\_Train\_Pos}_{c,s_{\text{test}},s_{\text{train}},l} \subset X_{c,s_{\text{train}}}$$
+where 
+$$|\text{Homog\_Train\_Pos}_{c,s_{\text{test}},s_{\text{train}},l}| = k$$
+Each homogeneous training set is then constructed as 
+$$\text{Homog\_Train}_{c,s_{\text{test}},s_{\text{train}},l} := \text{Homog\_Train\_Pos}_{c,s_{\text{test}},s_{\text{train}},l} \cup \text{Train\_Neg}_{c,s_{\text{test}}}$$
+Thus, for each cell type $c$, for each held-out study $s_{\text{test}}$, we construct $L \times |T(X_c) - 1|$ homogeneous training sets. That is, they each contain positive examples coming from a single study.
+
+For each cell type $c$ and held out study $s_{\text{test}}$, we create $L$ heterogeneous training sets for which the positive examples are sub-sampled from all of the held-in studies. That is, for each held-in study $s_{\text{train}} \in T(X_c) \setminus \{s_{\text{test}}\}$, we sub-sample $k / |T(X_c) - 1|$ samples and add them to the heterogeneous training set giving us 
+$$\text{Heter\_Train\_Pos}_{c,s_{\text{test}},l} \subset X_c$$
+where 
+$$|\text{Heter\_Train\_Pos}_{c,s_{\text{test}},l}| = k$$
+
+For each cell type $c$ and held out study $s_{\text{test}} \in T(X_c)$, we train a classifier on all of the homogeneous training sets and heterogeneous training sets and evaluate on the test set $\text{Test}_{c,s_{\text{test}}}$. We compute the average-precision (AP) score for each classifier.  Thus, for each held-in study $s_{\text{train}} \in T(X_c) \setminus \{s_{\text{test}}\}$, we have $L$ average-precision scores corresponding to the homogeneously trained classifiers for that study.
+We denote the average-precision score from each homogeneously trained classifier as $\text{Homog\_Avg\_Prec}_{c,s_{\text{test}},s_{\text{train}},l}$.  We also have $L$ average-precision scores for the heterogeneously trained classifiers. We denote the average-precision score for each classifier as $\text{Heter\_Avg\_Prec}_{c,s_{\text{test}},l}$.
+
+\section{Analysis }
+
+We compare the performance of the homogeneously trained classifiers versus the heterogeneously trained classifiers using two strategies. First, for each held out study $s_{\text{test}}$, we compute the mean average-precision (MAP) over \textit{all} homogeneously trained classifiers:
+$$\text{Homog\_MAP}_{c,s_{\text{test}}} := \frac{1}{L|T(X_c)-1|} \sum_{s_{\text{train}} \in T(X_c) \setminus \{s_{\text{test}}\}} \sum_{l=1}^L \text{Homog\_Avg\_Prec}_{c,s_{\text{test}},s_{\text{train}},l}$$
+The corresponding mean-average precision for the heterogeneously trained classifiers are defined as
+$$\text{Heter\_MAP}_{c,s_{\text{test}}} := \frac{1}{L} \sum_{l=1}^L \text{Homog\_Avg\_Prec}_{c,s_{\text{test}},s_{\text{train}},l}$$
+Figure~\ref{fig:homo_vs_hetero_setup} displays a scatter plot that plots each 
+$$(\text{Homog\_MAP}_{c,s_{\text{test}}}, \text{Heter\_MAP}_{c,s_{\text{test}}})$$ 
+pair where each point is colored by $c$. This analysis shows that, on average, a classifier trained on data from multiple studies, will outperform a classifier trained on data from only on study.

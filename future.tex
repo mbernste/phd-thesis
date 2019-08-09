@@ -1,0 +1,26 @@
+\chapter{Conclusion and future work } \label{chap:future}
+
+Transcriptome-based cellular phenotyping (TBCP) is a task with a number of important applications in biology and medicine.  The trove of publicly available RNA-seq data promises to be a valuable source of data for training machine learning algorithms to perform TBCP; however, to date utilizing the SRA for this purpose has remained challenging.  In this dissertation, we presented three bodies of work that progress our ability to utilize this data for training TBCP algorithms.  These projects make contributions across the machine learning pipeline. 
+
+ In Chapter~\ref{chap:1}, we presented the MetaSRA, a novel computational pipeline and associated database for labelling phenotypes in the poorly structured metadata of the SRA.  Our approach extended named entity recognition (NER) to not only label samples using mentioned terms, but also inferred which mentioned terms actually describe the biology of the sample. We found that our approach was able to produce results with similar levels of recall as state-of-the-art NER methods, but contained far fewer errors. 
+  
+ In Chapter~\ref{chap:2}, we leveraged the standardized phenotype labels produced by the MetaSRA to supervise the training of cell type classifiers.  We advocate the use of hierarchical classification to make full use of the graph-structure of the ontologies. To this end, we applied ensemble-based hierarchical classification algorithms to the cell type classification task and pushed the state-of-the-art in hierarchical cell type classification performance.  
+ 
+In Chapter~\ref{chap:3} we explored methods for extending the classifiers trained in Chapter~\ref{chap:2} to sparse, single-cell RNA-seq data generated from novel droplet-based technologies. We found that methods for imputing the values of each gene increased the classification performance of the trained classifiers. Further, we introduced a novel probabilistic model for implicitly performing gene expression imputation based on bulk RNA-seq data, which offers a promising approach to cell type classification in settings where computational resources and time are limited, such as clinical settings.
+
+In the subsections below, we discuss general areas that deserve further investigation.
+
+\subsection{Applications to other phenotyping tasks}
+
+Although the MetaSRA produced standard phenotype labels for multiple categories of phenotypes including disease, cell type, tissue, and cell line, the majority of the work presented in this dissertation regarding the actual training of machine learning algorithms focused on the cell type classification task. However, the methods that we explored are applicable to other phenotyping tasks as well. For example, the hierarchical classification algorithms explored in Chapter~\ref{chap:2} can be applied to disease type classification using the Disease Ontology. 
+
+\subsection{Quantifying and leveraging label-uncertainty}
+
+The methods used in the MetaSRA ontology term mapping process do not take into account uncertainty and therefore do not output a confidence for each mapped ontology term.  A confidence score associated with each mapped ontology term would prove useful for users in that it would enable users to set a confidence threshold in their MetaSRA-enabled queries of the SRA.  Intuitively, there are a number of signals that the MetaSRA could feasibly use to calculate this confidence score. For example, the MetaSRA should be less certain about an ontology term that is mapped to the sample due to a fuzzy string match with the metadata than it should be about a term that exactly matches the metadata.  
+
+In a similar vein, the classifiers developed in Chapter~\ref{chap:2} use the training labels as ground-truth and are not equipped to handle the possible uncertainty in those labels.  Because of this, a manual curation effort was required to remove cell type labels in the training set that were incorrectly mapped by the MetaSRA. If these labels were instead associated with a confidence score, methods could be pursued to train phenotype classifiers that take into account uncertainty in the training data. 
+
+\subsection{Interpreting the trained models}
+
+In Chapter~\ref{chap:2}, we advocate the use of linear models for classification, in part, due to their relative interpretability in comparison to other modeling frameworks (such as neural networks).  Linear models are interpretable in so far as the magnitude of each feature's coefficient reflects that feature's impact on the classifier's decision.  Nonetheless, because these models use so many features (i.e. one per gene) important questions remain as to how many genes are being used in a meaningful way by each cell type classifier.  Such an investigation may shed light on whether cell types are predominantly defined by relatively few distinguishing genes, or rather, by more global expression changes across the genome.
+
